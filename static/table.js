@@ -56,48 +56,10 @@ let json_data_ = {
       color: "black",
       category: "hue",
       type: "secondary",
-      protocoll: []
-    },
-    {
-      color: "white",
-      category: "value",
-      type: "secondary",
-      protocoll: [
-        {
-          color: "white",
-          category: "value",
-          type: "secondary"
-        }
-      ]
-    },
-    {
-      color: "red",
-      category: "hue",
-      type: "primary",
-      protocoll: [
-        {
-          color: "red",
-          category: "hue",
-          type: "Peter ZWeger"
-        }
-      ]
-    },
-    {
-      color: "blue",
-      category: "hue",
-      type: "primary",
-      protocoll: []
-    },
-    {
-      color: "yellow",
-      category: "hue",
-      type: "primary",
-      protocoll: []
-    },
-    {
-      color: "green",
-      category: "hue",
-      type: "secondary",
+      Mitarbeiter: "jan",
+      Francheckso: "blabla",
+      Francheckasdaso: "asd",
+      asdarq: "a",
       protocoll: []
     }
   ]
@@ -128,10 +90,10 @@ function createHead(json_data) {
   let tableHead = document.createElement("thead");
 
   for (column in json_data[0]) {
-    if (column != "protocoll") {
+    if (column != ProtocollString) {
       let tableHeadColumn = document.createElement("th");
 
-      tableHeadColumn.innerHTML = column;
+      tableHeadColumn.innerHTML = column.toUpperCase();
       tableHead.appendChild(tableHeadColumn);
     }
   }
@@ -169,6 +131,8 @@ function createRow(jsonObject, buttons) {
   if (buttons) {
     let buttonCollumn = document.createElement("td");
     editButton = createButton("edit", "editButton");
+    editButton.setAttribute("data-toggle", "modal");
+    editButton.setAttribute("data-target", "#exampleModalCenter");
     buttonCollumn.appendChild(editButton);
 
     protocollButton = createButton("receipt", "protoCollButton");
@@ -207,7 +171,7 @@ function addRow(jsonObject, tableId) {
     .getElementsByTagName("tbody")[0]
     .insertBefore(newRow, firstRow);
 }
-
+function editRow() {}
 function toggleProtocoll(jsonObject, referenzeRow) {
   //neue Zeile wird erstellt
 
@@ -223,6 +187,48 @@ function toggleProtocoll(jsonObject, referenzeRow) {
       referenzeRow.parentNode.insertBefore(newRow, referenzeRow.nextSibling);
     }
   }
+}
+
+function createCheckboxes(jsonObject) {
+  let targetDiv = document.getElementById("switches");
+  let letswitch = "";
+
+  for (columns in jsonObject[contentString][0]) {
+    if (columns != ProtocollString) {
+      letswitch += `<span class="bmd-form-group is-filled col-md-auto"><div class="switch"><label><input type="checkbox" class="checkboxButton" checked=""><span class="bmd-switch-track"></span><p class="${columns.toUpperCase()}">${columns.toUpperCase()}</p></label></div></span>`;
+    }
+  }
+
+  targetDiv.innerHTML = letswitch;
+  // console.log("createSwitches");
+  // let switchesDiv = document.getElementById("switches");
+
+  // for (columns in jsonObject[contentString][0]) {
+  //   let switchesCol = document.createElement("div");
+  //   switchesCol.setAttribute("class", "col");
+  //   let span = document.createElement("span");
+  //   span.setAttribute("class", "mdl-switch__label");
+
+  //   console.log("switches werden erstellt");
+  //   let switchDiv = document.createElement("div");
+  //   switchDiv.setAttribute("class", "switch");
+  //   let swtichLabel = document.createElement("label");
+  //   swtichLabel.setAttribute(
+  //     "class",
+  //     "mdl-switch mdl-js-switch mdl-js-ripple-effect mdl-js-ripple-effect--ignore-events is-checked is-upgraded"
+  //   );
+
+  //   swtichLabel.setAttribute("for", "switch-1");
+  //   let switchInput = document.createElement("input");
+  //   switchInput.setAttribute("type", "checkbox");
+  //   switchInput.setAttribute("class", "mdl-switch__input");
+  //   switchInput.checked = true;
+  //   switchInput.innerHTML = jsonObject[contentString][0][columns];
+  //   swtichLabel.appendChild(switchInput);
+  //   swtichLabel.appendChild(span);
+  //   switchesCol.appendChild(swtichLabel);
+  //   switchesDiv.appendChild(switchesCol);
+  // }
 }
 
 function insertAfter(newNode, referenceNode) {
@@ -398,10 +404,59 @@ function prepareModal(modalFormID, json_data) {
   }
 }
 
+function toogleCheckBoxes(checkBox) {
+  //die Column Name
+  let currentCheckboxName = checkBox.parentNode.getElementsByTagName("p")[0]
+    .innerHTML;
+  let tbl = document.getElementById(currentTable);
+
+  //sucht alle table headers
+  let cols = tbl.getElementsByTagName("th");
+  let targetIndex;
+  //Toggle die Ths
+  for (tableHeads in cols) {
+    if (cols[tableHeads].innerHTML == currentCheckboxName) {
+      targetIndex = tableHeads;
+      //Checkbox spezifische th gefunden!
+      let checkBoxSpezifischeTh = cols[tableHeads];
+
+      if (checkBoxSpezifischeTh.classList.contains("hidden")) {
+        checkBoxSpezifischeTh.classList.remove("hidden");
+        //wenn die Th hidden ist soll sie wieder angezeigt werden
+      } else {
+        checkBoxSpezifischeTh.classList.add("hidden");
+
+        //finde alle Trs von der th->
+
+        //setze th auf hidden
+      }
+    }
+  }
+
+  //suche alle trs von targetIndex
+  let allTrs = tbl.getElementsByTagName("tr");
+  for (tr = 0; tr < allTrs.length; tr++) {
+    let allTds = allTrs[tr];
+
+    let targetTd = allTds.childNodes[targetIndex];
+
+    if (targetTd.classList.contains("hidden")) {
+      targetTd.classList.remove("hidden");
+    } else {
+      targetTd.classList.add("hidden");
+    }
+  }
+}
+
 //handler
 
 $(document).ready(function() {
+  createCheckboxes(json_data_);
   let TableID = currentTable;
+
+  $(document).on("click", ".checkboxButton", function() {
+    toogleCheckBoxes(this);
+  });
 
   prepareModal("modalForm", json_data_);
 
@@ -415,12 +470,19 @@ $(document).ready(function() {
     deleteRow(rowIndex, TableID);
   });
 
+  $("#addButton").click(function() {
+    //toggle die Buttons von edit auf add
+    document.getElementById("addFahrzeuge").hidden = false;
+    document.getElementById("editSave").hidden = true;
+
+    let modalForm = document.getElementById("modalForm");
+    modalForm.name = "";
+  });
   //füge eine neue Row hinzu
   $("#addFahrzeuge").click(function() {
     let modalForm = document.getElementById("modalForm");
 
     let inputFields = modalForm.getElementsByTagName("input");
-    console.log(inputFields);
 
     let inputStruct = { protocoll: [] };
     for (input = 0; input < inputFields.length; input++) {
@@ -457,5 +519,68 @@ $(document).ready(function() {
     }
   });
 
-  $(document).on("click", ".noProtocoll", function() {});
+  $(document).on("click", ".editButton", function() {
+    //toggle die Modal buttons von Save auf Edit
+    document.getElementById("addFahrzeuge").hidden = true;
+    document.getElementById("editSave").hidden = false;
+
+    //lese die rows des edit Buttons aus
+    let currentRowsTds = $(this)
+      .closest("tr")[0]
+      .getElementsByTagName("td");
+
+    //geben der Modal form die Id des current Rows
+    let modalForm = document.getElementById("modalForm");
+
+    modalForm.name = this.closest("tr").id;
+
+    //befülle die Modal inputs mit den Daten aus den tds
+    let inputFields = modalForm.getElementsByTagName("input");
+    for (td in currentRowsTds) {
+      if (inputFields[td] != undefined) {
+        let tdInhalt = currentRowsTds[td].innerHTML;
+        inputFields[td].value = tdInhalt;
+      }
+    }
+
+    for (input = 0; input < inputFields.length; input++) {}
+  });
+
+  $(document).on("click", "#editSave", function() {
+    //suche die current Modal aus
+    let modalForm = document.getElementById("modalForm");
+    let modaId = modalForm.name;
+
+    //die Input fields des MOdals werden in die target trs eingefügt
+    let inputFields = modalForm.getElementsByTagName("input");
+    let targetTr = document.getElementById(modaId);
+    let targetTds = targetTr.getElementsByTagName("td");
+
+    //hier in die Datenbank einspeisen
+    let inputStruct = {};
+    for (input = 0; input < inputFields.length; input++) {
+      //setze die letzten Einträge in das Protocoll
+
+      inputStruct[inputFields[input].name] = inputFields[input].value;
+
+      let inputValue = inputFields[input];
+      targetTds[input].innerHTML = inputValue.value;
+    }
+
+    json_data_[contentString][modaId][ProtocollString].push(inputStruct);
+
+    //hier entferne ich die Classe von Protocoll
+
+    $(targetTr.getElementsByClassName("noProtocoll")).removeClass(
+      "noProtocoll"
+    );
+
+    ///hier json_data hochschicken zu mongo DB
+
+    $("#exampleModalCenter").modal("hide");
+
+    $("body").bootstrapMaterialDesign();
+
+    // editRow(inputStruct, TableID);
+  });
 });

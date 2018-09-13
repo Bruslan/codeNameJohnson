@@ -9,7 +9,23 @@
 tbody tr:hover td {
   background: #fcf3d0 !important;
 }
+.hidden {
+  display: none;
+}
 
+.mdl-switch.is-checked .mdl-switch__thumb {
+  background: #f5f5f5 !important;
+}
+.mdl-switch.is-checked .mdl-switch__track {
+  background: #fcf3d0 !important;
+}
+
+.switch label input:checked + .bmd-switch-track:after {
+  background: #f5f5f5 !important;
+}
+.switch label .bmd-switch-track {
+  background: #fcf3d0 !important;
+}
 .protocoll {
   background: lightgrey;
 }

@@ -1,0 +1,40 @@
+.table td,
+.table th {
+  vertical-align: middle !important;
+}
+
+.menu {
+  vertical-align: middle !important;
+}
+tbody tr:hover td {
+  background: #fcf3d0 !important;
+}
+
+.protocoll {
+  background: lightgrey;
+}
+
+.noProtocoll {
+  opacity: 0.2;
+}
+.card {
+  margin: 0 auto 0;
+
+  position: relative;
+}
+.card-body {
+  margin: 0 auto 0;
+  max-height: 500px;
+  overflow-y: scroll;
+  position: relative;
+  transition: all 0.2s ease-out;
+}
+@media (min-width: 768px) {
+  .table-wrapper {
+    background: white;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+  }
+}
+
+body.large-screen .table-wrapper {
+}

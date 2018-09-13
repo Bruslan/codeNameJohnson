@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Material Design for Bootstrap fonts and icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
+
+    <!-- Material Design for Bootstrap CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css"
+        integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
+
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <link rel="stylesheet" href="../static/css/table.css">
+
+
+    <title>Table Management VANILLA</title>
+</head>
+
+<body class="large-screen">
+    <!-- As a link -->
+    <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">VANILLA</a>
+
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Features</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Pricing</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Dropdown link
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Fahrzeug Tabelle</li>
+        </ol>
+    </nav>
+
+
+    <!-- <div class="p-0 container mt-2">
+
+        <div class="card-body row">
+            <div class="switch col m-0">
+                <label>
+                    <input type="checkbox" checked>
+                    Fahrzeugnummer
+                </label>
+            </div>
+            <div class="switch col m-0">
+                <label>
+                    <input type="checkbox" checked>
+                    Mitarbeiter
+                </label>
+            </div>
+            <div class="switch col m-0">
+                <label>
+                    <input type="checkbox" checked>
+                    Notiz
+                </label>
+            </div>
+        </div>
+
+
+    </div> -->
+
+    <div class="container  mt-4 p-0">
+
+
+        <button data-toggle="modal" data-target="#exampleModalCenter" id="addButton" type="button " class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect btn bmd-btn-fab">
+            <i class="material-icons">add</i>
+
+        </button>
+        <span class="mdl-tooltip" for="addFahrzeuge">Fahrzeuge können hinzugefügt werden</span>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="modalBody">
+                        <form id="modalForm">
+                            <!-- <div class="form-group">
+                                <label class="bmd-label-floating">Email address</label>
+                                <input class="form-control">
+                            </div> -->
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" id="addFahrzeuge" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+    <div class="card container mt-3">
+        <div class="card-header ">
+
+            <div class="row">
+
+
+                <div class="col">
+                    <form class="m-0" action="#">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+                            <label class="mdl-button mdl-js-button mdl-button--icon" for="searchField">
+                                <i class="material-icons">search</i>
+                            </label>
+                            <div class="mdl-textfield__expandable-holder">
+                                <input class="mdl-textfield__input" type="text" onkeyup=filterTable() id="searchField">
+                                <label class="mdl-textfield__label" for="sample-expandable">Expandable Input</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- <div class="col menu">
+                    <div class="dropdown text-right">
+                        <button class="btn bmd-btn-icon dropdown-toggle" type="button" id="ex1" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            <i class="material-icons">more_vert</i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-left" aria-labelledby="ex1">
+                            <button class="dropdown-item" type="button">CSV Export</button>
+                            <button class="dropdown-item " type="button">Download PDF</button>
+                            <button class="dropdown-item" type="button">...</button>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+                <!-- Expandable Textfield -->
+
+
+
+                <!-- Right aligned menu below button -->
+                <button id="demo-menu-lower-right" class="mdl-button mdl-js-button mdl-button--icon mdl-button--fab mdl-button--mini-fab">
+                    <i class="material-icons">apps</i>
+                </button>
+
+
+                <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
+                    <li class="mdl-list__item mdl-menu__item downloadCSV">
+                        <span class="mdl-list__item-primary-content ">
+                            <i class="material-icons mdl-list__item-icon">save</i>
+                            Save CSV
+                        </span>
+                    </li>
+                    <li class="mdl-list__item mdl-menu__item downloadExcel">
+                        <span class="mdl-list__item-primary-content ">
+                            <i class="material-icons mdl-list__item-icon">list</i>
+                            Save Excel
+                        </span>
+                    </li>
+                    <li class="mdl-list__item mdl-menu__item">
+                        <span class="mdl-list__item-primary-content">
+                            <i class="material-icons mdl-list__item-icon">import_export</i>
+                            Export
+                        </span>
+                    </li>
+                    <li class="mdl-list__item mdl-menu__item ">
+                        <span class="mdl-list__item-primary-content ">
+                            <i class="material-icons mdl-list__item-icon ">cloud</i>
+                            Das ist ein Download
+                        </span>
+                    </li>
+
+                </ul>
+
+                <!-- Icon List -->
+                <style>
+                    .demo-list-icon {
+                        width: 300px;
+                    }
+                </style>
+
+
+
+
+            </div>
+
+            <div id="tabelle" class="card-body ">
+            </div>
+
+
+
+
+        </div>
+
+
+
+
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U"
+            crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9"
+            crossorigin="anonymous"></script>
+        <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+        <script>$(document).ready(function () { $('body').bootstrapMaterialDesign(); });</script>
+        <script src="../static/table.js"></script>
+</body>
+
+</html>

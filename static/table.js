@@ -1,4 +1,4 @@
-let json_data_2 = {
+let json_data_ = {
   content: [
     {
       Kennzeichen: "Adolf Hitler",
@@ -50,7 +50,7 @@ let json_data_2 = {
   ]
 };
 
-let json_data_ = {
+let json_data__ = {
   content: [
     {
       color: "black",
@@ -151,9 +151,12 @@ function createRow(jsonObject, buttons) {
 }
 
 //füght eine Row ganz oben hinzu
-function addRow(jsonObject, tableId) {
+function addRow(jsonObject, structToAdd, tableId) {
   //neue Zeile wird erstellt
-  let newRow = createRow(jsonObject, true);
+  let newRow = createRow(structToAdd, true);
+
+  //hier muss eine id rein
+  newRow.setAttribute("id", jsonObject[contentString].length - 1);
   $(newRow.getElementsByClassName("protoCollButton")[0]).addClass(
     "noProtocoll disabled"
   );
@@ -451,6 +454,8 @@ function toogleCheckBoxes(checkBox) {
 //handler
 
 $(document).ready(function() {
+  $("body").bootstrapMaterialDesign();
+
   createCheckboxes(json_data_);
   let TableID = currentTable;
 
@@ -490,7 +495,7 @@ $(document).ready(function() {
       inputStruct[inputFields[input].name] = inputValue.value;
     }
 
-    addRow(inputStruct, TableID);
+    addRow(json_data_, inputStruct, TableID);
   });
 
   //downloade die Tabelle als CSV
@@ -534,6 +539,9 @@ $(document).ready(function() {
 
     modalForm.name = this.closest("tr").id;
 
+    //hier ist ein Problem
+    console.log(modalForm.name);
+
     //befülle die Modal inputs mit den Daten aus den tds
     let inputFields = modalForm.getElementsByTagName("input");
     for (td in currentRowsTds) {
@@ -548,13 +556,15 @@ $(document).ready(function() {
 
   $(document).on("click", "#editSave", function() {
     //suche die current Modal aus
+
     let modalForm = document.getElementById("modalForm");
     let modaId = modalForm.name;
-
-    //die Input fields des MOdals werden in die target trs eingefügt
+    console.log(modaId);
+    //die Input fields des modals
     let inputFields = modalForm.getElementsByTagName("input");
     let targetTr = document.getElementById(modaId);
     let targetTds = targetTr.getElementsByTagName("td");
+    console.log(inputFields);
 
     //hier in die Datenbank einspeisen
     let inputStruct = {};
@@ -569,7 +579,7 @@ $(document).ready(function() {
 
     json_data_[contentString][modaId][ProtocollString].push(inputStruct);
 
-    //hier entferne ich die Classe von Protocoll
+    // hier entferne ich die Classe von Protocoll
 
     $(targetTr.getElementsByClassName("noProtocoll")).removeClass(
       "noProtocoll"
@@ -578,8 +588,6 @@ $(document).ready(function() {
     ///hier json_data hochschicken zu mongo DB
 
     $("#exampleModalCenter").modal("hide");
-
-    $("body").bootstrapMaterialDesign();
 
     // editRow(inputStruct, TableID);
   });

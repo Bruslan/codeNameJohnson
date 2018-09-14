@@ -126,6 +126,7 @@ function createHead(json_data) {
   for (column in json_data[0]) {
     if (column != ProtocollString) {
       let tableHeadColumn = document.createElement("th");
+      tableHeadColumn.setAttribute("class", "sortColumn");
 
       tableHeadColumn.innerHTML = column.toUpperCase();
       tableHead.appendChild(tableHeadColumn);
@@ -191,7 +192,7 @@ function addRow(jsonObject, insertStruct, tableId) {
   let newRow = createRow(insertStruct, true);
 
   //hier muss eine id rein
-  newRow.setAttribute("id", jsonObject[contentString].length - 1);
+  newRow.setAttribute("id", jsonObject[contentString].length);
   $(newRow.getElementsByClassName("protoCollButton")[0]).addClass(
     "noProtocoll disabled"
   );
@@ -491,6 +492,112 @@ function prepareModal(modalFormID, json_data) {
   }
 }
 
+function exportToPDF() {
+  var pdf = new jsPDF("p", "pt", "letter");
+  // source can be HTML-formatted string, or a reference
+  // to an actual DOM element from which the text will be scraped.
+  source = $("#tabelle")[0];
+
+  // we support special element handlers. Register them with jQuery-style
+  // ID selector for either ID or node name. ("#iAmID", "div", "span" etc.)
+  // There is no support for any other type of selectors
+  // (class, of compound) at this time.
+  specialElementHandlers = {
+    // element with id of "bypass" - jQuery style selector
+    "#bypassme": function(element, renderer) {
+      // true = "handled elsewhere, bypass text extraction"
+      return true;
+    }
+  };
+  margins = {
+    top: 80,
+    bottom: 60,
+    left: 40,
+    width: 522
+  };
+  // all coords and widths are in jsPDF instance's declared units
+  // 'inches' in this case
+  pdf.fromHTML(
+    source, // HTML string or DOM elem ref.
+    margins.left, // x coord
+    margins.top,
+    {
+      // y coord
+      width: margins.width, // max width of content on PDF
+      elementHandlers: specialElementHandlers
+    },
+    function(dispose) {
+      // dispose: object with X, Y of the last line add to the PDF
+      //          this allow the insertion of new lines after html
+      pdf.save("Test.pdf");
+    },
+    margins
+  );
+}
+
+function sortTable(tableID, n) {
+  var table,
+    rows,
+    switching,
+    i,
+    x,
+    y,
+    shouldSwitch,
+    dir,
+    switchcount = 0;
+  table = document.getElementById(tableID);
+  switching = true;
+  //Set the sorting direction to ascending:
+  dir = "asc";
+  /*Make a loop that will continue until
+  no switching has been done:*/
+  while (switching) {
+    //start by saying: no switching is done:
+    switching = false;
+    rows = table.rows;
+    /*Loop through all table rows (except the
+    first, which contains table headers):*/
+    for (i = 0; i < rows.length - 1; i++) {
+      //start by saying there should be no switching:
+      shouldSwitch = false;
+      /*Get the two elements you want to compare,
+      one from current row and one from the next:*/
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      /*check if the two rows should switch place,
+      based on the direction, asc or desc:*/
+      if (dir == "asc") {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          //if so, mark as a switch and break the loop:
+          shouldSwitch = true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          //if so, mark as a switch and break the loop:
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      /*If a switch has been marked, make the switch
+      and mark that a switch has been done:*/
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      //Each time a switch is done, increase this count by 1:
+      switchcount++;
+    } else {
+      /*If no switching has been done AND the direction is "asc",
+      set the direction to "desc" and run the while loop again.*/
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+}
+
 function toogleCheckBoxes(checkBox) {
   //die Column Name
   let currentCheckboxName = checkBox.parentNode.getElementsByTagName("p")[0]
@@ -585,7 +692,8 @@ $(document).ready(function() {
 
   //downloade die Tabelle als CSV
   $(".downloadCSV").click(function() {
-    exportTableToCSV(`${TableID}Tabelle.csv`, TableID);
+    // exportTableToCSV(`${TableID}Tabelle.csv`, TableID);
+    exportToPDF();
   });
 
   //downloade die Tabelle als excel
@@ -605,6 +713,18 @@ $(document).ready(function() {
   });
 
   // Trigger das PRotocoll
+
+  $(document).on("click", ".sortColumn", function() {
+    $("table tr.protocoll").remove();
+    // console.log("ich habe es gecklickt");
+    let col = $(this)
+      .parent()
+      .children()
+      .index($(this));
+
+    // console.log(col);
+    sortTable(currentTable, col);
+  });
 
   $(document).on("click", ".protoCollButton", function() {
     if ($(this).hasClass("pressed")) {

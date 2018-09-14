@@ -34,7 +34,7 @@ class Table {
     let thead = this.createTableHead();
     tabelle.appendChild(thead);
 
-    tableBody = createTableBody();
+    tableBody = this.createTableBody();
     tabelle.appendChild(tableBody);
 
     return tabelle;
@@ -43,7 +43,7 @@ class Table {
     let tableBodyRow = document.createElement("tr");
     tableBodyRow.setAttribute("style", "vertical-align:middle");
 
-    for (value in documentObj) {
+    for (let value in documentObj) {
       if (value != this.protocollString) {
         let tableBodyColumn = document.createElement("td");
 
@@ -54,19 +54,19 @@ class Table {
 
     if (buttons) {
       let buttonCollumn = document.createElement("td");
-      editButton = createButton("edit", "editButton");
+      editButton = this.createButton("edit", "editButton");
       editButton.setAttribute("data-toggle", "modal");
       //magic Number!!!
       editButton.setAttribute("data-target", "#exampleModalCenter");
       buttonCollumn.appendChild(editButton);
 
-      protocollButton = createButton("receipt", "protoCollButton");
+      protocollButton = this.createButton("receipt", "protoCollButton");
 
       if (documentObj[this.protocollString].length == 0) {
         $(protocollButton).addClass("noProtocoll");
       }
       buttonCollumn.appendChild(protocollButton);
-      deleteButton = createButton("delete", "deleteButton");
+      deleteButton = this.createButton("delete", "deleteButton");
       buttonCollumn.appendChild(deleteButton);
 
       tableBodyRow.appendChild(buttonCollumn);
@@ -77,10 +77,10 @@ class Table {
   createTableHead() {
     let tableHead = document.createElement("thead");
     let data = this.data[0];
-    console.log(data.protocoll[0]);
-    for (column in data.protocoll[0]) {
+    console.log(data.col1);
+    for (let column in data) {
       console.log(column);
-      if (column != ProtocollString) {
+      if (column != this.ProtocollString) {
         let tableHeadColumn = document.createElement("th");
 
         tableHeadColumn.innerHTML = column.toUpperCase();
@@ -94,8 +94,8 @@ class Table {
     let tableBody = document.createElement("tbody");
 
     //hier erstelle ich Rows für tableBody
-    for (i = 0; i < this.data.length; i++) {
-      tableBodyRow = createRow(this.data[i], true);
+    for (let i = 0; i < this.data.length; i++) {
+      tableBodyRow = this.createRow(this.data[i], true);
       tableBodyRow.setAttribute("id", i);
 
       tableBody.appendChild(tableBodyRow);
@@ -134,8 +134,9 @@ $(document).ready(function() {
     data["content"],
     "protocoll"
   );
+  let MTabelle = MitarbeiterTabelle.create();
 
   document.getElementById("weitereTabelle").appendChild(FTabelle);
 
-  document.getElementById("mTabelle").appendChild(MitarbeiterTabelle);
+  document.getElementById("mTabelle").appendChild(MTabelle);
 });

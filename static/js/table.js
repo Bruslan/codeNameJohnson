@@ -69,6 +69,40 @@ let contentString = "content";
 let ProtocollString = "protocoll";
 let currentTable = "FahrzeugTabelle";
 
+var CreateTableFromJson = function(DataArr, Columns) {
+  var GetHeaderNames = _.size(Columns) < 1 ? DataArr[0] : Columns;
+  var GetRows = DataArr;
+
+  var d = "";
+  d += '<table class="table table-hover table-bordered " width="100%">';
+
+  //--->Create Header- Start
+  d += "<thead>";
+  d += "<tr>";
+  $.each(GetHeaderNames, function(index, value) {
+    var col_value = _.size(Columns) < 1 ? index : value;
+    d += "<th >" + _.startCase(col_value) + "</th>";
+  });
+  d += "</tr>";
+  d += "</thead>";
+  //--->Create Header- End
+
+  //--->Create Rows - Start
+  d += "<tbody>";
+  $.each(GetRows, function(index, v1) {
+    d += "<tr>";
+    $.each(v1, function(index, v2) {
+      d += '<td id="myTable" >' + v2 + "</td>";
+    });
+    d += "</tr>";
+  });
+  d += "</tbody>";
+  //--->Create Rows - End
+
+  d += " </table>";
+  return d;
+};
+
 function createTable(json_data, TableID) {
   let tabelle = document.createElement("table");
   tabelle.setAttribute("id", TableID);
@@ -130,6 +164,7 @@ function createRow(jsonObject, buttons) {
 
   if (buttons) {
     let buttonCollumn = document.createElement("td");
+    buttonCollumn.setAttribute("class", "functionButtons");
     editButton = createButton("edit", "editButton");
     editButton.setAttribute("data-toggle", "modal");
     editButton.setAttribute("data-target", "#exampleModalCenter");
@@ -151,9 +186,9 @@ function createRow(jsonObject, buttons) {
 }
 
 //füght eine Row ganz oben hinzu
-function addRow(jsonObject, structToAdd, tableId) {
+function addRow(jsonObject, insertStruct, tableId) {
   //neue Zeile wird erstellt
-  let newRow = createRow(structToAdd, true);
+  let newRow = createRow(insertStruct, true);
 
   //hier muss eine id rein
   newRow.setAttribute("id", jsonObject[contentString].length - 1);
@@ -174,7 +209,7 @@ function addRow(jsonObject, structToAdd, tableId) {
     .getElementsByTagName("tbody")[0]
     .insertBefore(newRow, firstRow);
 }
-function editRow() {}
+
 function toggleProtocoll(jsonObject, referenzeRow) {
   //neue Zeile wird erstellt
 
@@ -289,12 +324,24 @@ function downloadCSV(csv, filename) {
 
 function exportTableToCSV(filename, tableID) {
   var csv = [];
+  var head = document
+    .getElementById(tableID)
+    .querySelectorAll("table th:not(.hidden)");
   var rows = document.getElementById(tableID).querySelectorAll("table tr");
 
-  for (var i = 0; i < rows.length; i++) {
-    var row = [],
-      cols = rows[i].querySelectorAll("td, th");
+  // cols = rows[i].querySelectorAll("td, th");
+  let row = [];
+  for (var j = 0; j < head.length; j++) row.push(head[j].innerText);
 
+  csv.push(row.join(","));
+
+  for (var i = 0; i < rows.length; i++) {
+    let row = [],
+      // cols = rows[i].querySelectorAll("td, th");
+
+      cols = rows[i].querySelectorAll(
+        "td:not(.hidden):not(.functionButtons), th:not(.hidden)"
+      );
     for (var j = 0; j < cols.length; j++) row.push(cols[j].innerText);
 
     csv.push(row.join(","));
@@ -305,10 +352,37 @@ function exportTableToCSV(filename, tableID) {
 }
 
 function exportTableToExcel(tableID, filename = "") {
+  var csv = [];
+  var head = document
+    .getElementById(tableID)
+    .querySelectorAll("table th:not(.hidden)");
+  var rows = document.getElementById(tableID).querySelectorAll("table tr");
+
+  // cols = rows[i].querySelectorAll("td, th");
+  let row = [];
+  for (var j = 0; j < head.length; j++) row.push(head[j].innerText);
+
+  csv.push(row.join(","));
+
+  for (var i = 0; i < rows.length; i++) {
+    let row = [],
+      // cols = rows[i].querySelectorAll("td, th");
+
+      cols = rows[i].querySelectorAll(
+        "td:not(.hidden):not(.functionButtons), th:not(.hidden)"
+      );
+    for (var j = 0; j < cols.length; j++) row.push(cols[j].innerText);
+
+    csv.push(row.join(","));
+  }
+
   var downloadLink;
   var dataType = "application/vnd.ms-excel";
   var tableSelect = document.getElementById(tableID);
+  console.log(tableSelect);
+
   var tableHTML = tableSelect.outerHTML.replace(/ /g, "%20");
+  // console.log(tableHTML);
 
   // Specify file name
   filename = filename ? filename + ".xls" : "excel_data.xls";
@@ -322,13 +396,22 @@ function exportTableToExcel(tableID, filename = "") {
     var blob = new Blob(["\ufeff", tableHTML], {
       type: dataType
     });
+
     navigator.msSaveOrOpenBlob(blob, filename);
   } else {
     // Create a link to the file
-    downloadLink.href = "data:" + dataType + ", " + tableHTML;
+
+    console.log(csv);
+
+    for (i in csv) {
+      csv[i] += "\r\n";
+    }
+    downloadLink.href = "data:" + dataType + ", " + csv;
 
     // Setting the file name
     downloadLink.download = filename;
+
+    console.log(csv);
 
     //triggering the function
     downloadLink.click();
@@ -349,9 +432,10 @@ function filterTable() {
   // Loop through all table rows, and hide those who don't match the search query
   for (var i = 0; i < tr.length; i++) {
     var check = false;
+
     for (var j = 0; j < tr[i].getElementsByTagName("td").length; j++) {
       td = tr[i].getElementsByTagName("td")[j];
-      if (td) {
+      if (td && !td.classList.contains("hidden")) {
         if (td.innerHTML.includes("</") == false) {
           if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
             check = true;
@@ -457,6 +541,7 @@ $(document).ready(function() {
   $("body").bootstrapMaterialDesign();
 
   createCheckboxes(json_data_);
+
   let TableID = currentTable;
 
   $(document).on("click", ".checkboxButton", function() {
@@ -506,6 +591,17 @@ $(document).ready(function() {
   //downloade die Tabelle als excel
   $(".downloadExcel").click(function() {
     exportTableToExcel(TableID, (filename = `${TableID}Tabelle`));
+  });
+
+  $(".enableCheckboxes").click(function() {
+    console.log("enableCheckboxes");
+    let switches = document.getElementById("switches");
+
+    if (switches.classList.contains("hidden")) {
+      switches.classList.remove("hidden");
+    } else {
+      switches.classList.add("hidden");
+    }
   });
 
   // Trigger das PRotocoll
@@ -559,12 +655,11 @@ $(document).ready(function() {
 
     let modalForm = document.getElementById("modalForm");
     let modaId = modalForm.name;
-    console.log(modaId);
+
     //die Input fields des modals
     let inputFields = modalForm.getElementsByTagName("input");
     let targetTr = document.getElementById(modaId);
     let targetTds = targetTr.getElementsByTagName("td");
-    console.log(inputFields);
 
     //hier in die Datenbank einspeisen
     let inputStruct = {};

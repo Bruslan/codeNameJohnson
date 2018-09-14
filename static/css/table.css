@@ -3,6 +3,17 @@
   vertical-align: middle !important;
 }
 
+#switches{
+  transition: opacity 300ms ease-in-out 1s;
+}
+#switches.hidden{
+
+  opacity:  0;
+}
+
+
+
+
 .menu {
   vertical-align: middle !important;
 }
@@ -11,13 +22,6 @@ tbody tr:hover td {
 }
 .hidden {
   display: none;
-}
-
-.mdl-switch.is-checked .mdl-switch__thumb {
-  background: #f5f5f5 !important;
-}
-.mdl-switch.is-checked .mdl-switch__track {
-  background: #fcf3d0 !important;
 }
 
 .switch label input:checked + .bmd-switch-track:after {
@@ -52,5 +56,4 @@ tbody tr:hover td {
   }
 }
 
-body.large-screen .table-wrapper {
-}
+b
